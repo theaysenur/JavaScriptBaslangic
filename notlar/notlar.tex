@@ -1,0 +1,399 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Font ve dil ----------
+\usepackage{fontspec}
+\setmainfont{DejaVu Sans}
+\newfontfamily\turkishfont{DejaVu Sans}
+
+% ---------- Sayfa düzeni ----------
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{parskip}
+
+% ---------- Renkler ----------
+\definecolor{codebg}{RGB}{245,246,248}
+\definecolor{codeframe}{RGB}{210,214,220}
+\definecolor{jsblue}{RGB}{0,92,197}
+\definecolor{jsgreen}{RGB}{60,140,60}
+\definecolor{jsgray}{RGB}{110,110,110}
+\definecolor{noteorange}{RGB}{176,96,0}
+\definecolor{noteorangebg}{RGB}{255,244,229}
+\definecolor{titleblue}{RGB}{18,52,86}
+
+% ---------- Başlık biçimleri ----------
+\titleformat{\section}
+  {\Large\bfseries\color{titleblue}}{\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\large\bfseries\color{titleblue}}{\thesubsection}{0.6em}{}
+
+% ---------- Kod bloğu stili ----------
+\lstdefinelanguage{JavaScriptTR}{
+  keywords={var, let, const, function, return, if, else, for, while, true, false, typeof, new},
+  keywordstyle=\color{jsblue}\bfseries,
+  ndkeywords={console, log, Math, Number, parseFloat},
+  ndkeywordstyle=\color{jsgreen},
+  comment=[l]{//},
+  commentstyle=\color{jsgray}\itshape,
+  string=[b]",
+  string=[b]',
+  stringstyle=\color{noteorange},
+  morestring=[b]`,
+  sensitive=true
+}
+
+\lstset{
+  language=JavaScriptTR,
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codeframe},
+  framerule=0.4pt,
+  breaklines=true,
+  breakatwhitespace=false,
+  showstringspaces=false,
+  tabsize=2,
+  columns=fullflexible,
+  xleftmargin=8pt,
+  xrightmargin=8pt,
+  aboveskip=8pt,
+  belowskip=8pt
+}
+
+% ---------- Dikkat / Not kutusu ----------
+\newtcolorbox{dikkat}{
+  breakable, enhanced,
+  colback=noteorangebg, colframe=noteorange,
+  boxrule=0.6pt, arc=2pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  title={\textbf{Dikkat}},
+  fonttitle=\bfseries\color{noteorange},
+  coltitle=noteorange
+}
+
+% ---------- Üstbilgi/altbilgi ----------
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancyhead[L]{JavaScript Başlangıç Notları}
+\fancyhead[R]{\thepage}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=titleblue,
+  urlcolor=titleblue,
+  pdftitle={JavaScript Başlangıç Notları},
+  pdfauthor={Ayşenur}
+}
+
+\renewcommand{\contentsname}{İçindekiler}
+
+\begin{document}
+
+% ================= KAPAK =================
+\begin{titlepage}
+\centering
+\vspace*{3.5cm}
+{\Huge\bfseries\color{titleblue} JavaScript Başlangıç Notları}\\[0.8cm]
+{\Large Değişkenler, Stringler, Sayılar, Diziler ve Nesneler}\\[2.5cm]
+{\large Ayşenur}\\[0.3cm]
+{\large 3 Ağustos 2026}\\[3cm]
+{\normalsize Bu belge, \texttt{JavaScriptBaslangic} GitHub reposundaki\\
+\texttt{3\_js\_kodlama} klasöründe yazılan pratik kodların ders notu haline getirilmiş halidir.}
+\vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ================= GİRİŞ =================
+\section*{Klasör Yapısı}
+\addcontentsline{toc}{section}{Klasör Yapısı}
+
+\begin{lstlisting}[language={},basicstyle=\ttfamily\small,frame=single,backgroundcolor=\color{codebg}]
+3_js_kodlama/
+|-- index.html     -> script6.js'i sayfaya baglayan basit HTML dosyasi
+|-- script.js       -> Degiskenler, veri tipleri, string temelleri
+|-- script2.js      -> String uygulamalari (URL/slug ornegi)
+|-- script3.js      -> Sayilar (Number, Math) ve diziler
+|-- script4.js      -> Dizi metotlari
+|-- script5.js      -> Dizi uygulamasi + nesneler (objects)
+`-- script6.js      -> Ic ice nesne/dizi uygulamasi (siparis sistemi)
+\end{lstlisting}
+
+Konsol çıktılarını görmek için \texttt{index.html} dosyasını tarayıcıda açıp geliştirici araçları (F12) $\rightarrow$ Console sekmesine bakman yeterli.
+
+\newpage
+
+% ================= SCRIPT.JS =================
+\section{script.js --- Değişkenler, Veri Tipleri, String Temelleri}
+
+\subsection*{Değişken Tanımlama}
+\texttt{var} anahtar kelimesiyle değişken tanımlandı (\texttt{let} de aynı işi görür, aralarındaki fark ileride kapsam/scope konusunda önemli olacak).
+
+\begin{lstlisting}
+var a = 5000;
+a = 6000; // var ile tanimlanan degiskenin degeri sonradan degistirilebilir
+\end{lstlisting}
+
+\textbf{Değişken isimlendirme kuralları:} İsimler rakamla başlayamaz, JS'in ayrılmış komut isimleri (\texttt{var}, \texttt{function} vb.) değişken adı olarak kullanılamaz.
+
+\subsection*{Veri Tipleri ve \texttt{typeof}}
+
+\begin{lstlisting}
+var urunAdi = 'Iphone 16';   // string
+var urunfyat2 = 7000;         // number
+console.log(typeof urunAdi);  // "string"
+\end{lstlisting}
+
+\begin{dikkat}
+İki string \texttt{+} ile birleştirildiğinde matematiksel toplama değil, \textbf{concatenation (birleştirme)} yapılır:
+\begin{lstlisting}
+var sayi1 = '10';
+var sayi2 = '20';
+console.log(sayi1 + sayi2); // "1020" olur, 30 degil!
+\end{lstlisting}
+\end{dikkat}
+
+\textbf{\texttt{undefined}:} Değer atanmamış bir değişkenin hem değeri hem tipi \texttt{undefined} döner.
+
+\subsection*{Uygulama --- Öğrenci Not Ortalaması}
+İki öğrencinin doğum yılından yaşını hesaplama (\texttt{2026 - doğumYılı}) ve üç sınav notunun ortalamasını alıp 50 barajına göre başarı durumunu (\texttt{true}/\texttt{false}) belirleme. Bu, karşılaştırma operatörlerinin (\texttt{>=}) boolean sonuç ürettiğini gösteren güzel bir örnek.
+
+\subsection*{String'e Index ile Erişim ve Template String}
+
+\begin{lstlisting}
+var ad = 'Aysenur';
+console.log(ad[0]); // "A"
+
+var mesaj = `Benim adim ${ad}`; // template string (backtick)
+\end{lstlisting}
+
+\subsection*{String Metotları}
+
+\begin{center}
+\begin{tabular}{@{}p{4cm}p{9.5cm}@{}}
+\toprule
+\textbf{Metot} & \textbf{Ne yapar} \\
+\midrule
+\texttt{toUpperCase()} & Tüm harfleri büyütür \\
+\texttt{length} & Karakter sayısını verir \\
+\texttt{slice(start, end)} & Belirtilen aralığı keser; negatif index sağdan sayar \\
+\texttt{substring(start, end)} & slice'a benzer, negatif index desteklemez \\
+\texttt{replace(eski, yeni)} & İlk eşleşmeyi değiştirir \\
+\texttt{trim()} & Baştaki/sondaki boşlukları siler \\
+\texttt{indexOf(metin)} & Metnin bulunduğu index'i verir, yoksa -1 \\
+\texttt{split(ayraç)} & Stringi diziye böler \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{dikkat}
+Dosyada \texttt{kursAdi.split(" ")[-1]} ile son elemanı almaya çalışılmış. JavaScript'te Python'daki gibi \textbf{negatif index desteği yoktur}, bu yüzden \texttt{[-1]} çalışmaz ve \texttt{undefined} döner. Son elemanı almak için \texttt{split(" ").at(-1)} ya da \texttt{split(" ")[dizi.length - 1]} kullanılmalı.
+\end{dikkat}
+
+\newpage
+
+% ================= SCRIPT2.JS =================
+\section{script2.js --- String Uygulamaları}
+
+Gerçek bir senaryo: bir URL ve kurs adından ``slug'' (URL'de kullanılabilir kısa isim) üretme.
+
+\begin{lstlisting}
+let url = "https://www.sadikturan.com";
+let kursAdi = "Komple Web Gelistirme Kursu";
+
+var kacKelime = kursAdi.split(" ");     // kelimelere ayirma
+var urlBulma = url.split(":");           // protokolu ayirma ("https")
+var kucuk = kursAdi.toLowerCase();       // kucuk harfe cevirme
+var yeni = kucuk.replaceAll(" ", "-");   // bosluklari tire ile degistirme
+
+var mesaj = `${url}/${yeni}`;
+console.log(mesaj); // https://www.sadikturan.com/komple-web-gelistirme-kursu
+\end{lstlisting}
+
+Bu dosyada öğrenilen ana fikir: string metotları zincirleme kullanılarak gerçek dünyada işe yarayan bir dönüşüm (slug oluşturma) yapılabiliyor.
+
+\newpage
+
+% ================= SCRIPT3.JS =================
+\section{script3.js --- Sayılar ve Diziler}
+
+\subsection*{Tip Dönüştürme ve Biçimlendirme}
+
+\begin{lstlisting}
+sonuc = Number(sonuc);       // string -> number
+sonuc = parseFloat("20.2");   // ondalikli stringi sayiya cevirir
+
+let sayi = 10.58946;
+sayi.toPrecision(6); // toplam 6 basamak gosterir
+sayi.toFixed(5);      // virgulden sonra 5 basamak gosterir
+\end{lstlisting}
+
+\subsection*{Math Nesnesi}
+
+\begin{center}
+\begin{tabular}{@{}p{4cm}p{9.5cm}@{}}
+\toprule
+\textbf{Fonksiyon} & \textbf{Ne yapar} \\
+\midrule
+\texttt{Math.round(x)} & En yakın tam sayıya yuvarlar \\
+\texttt{Math.ceil(x)} & Yukarı yuvarlar \\
+\texttt{Math.floor(x)} & Aşağı yuvarlar \\
+\texttt{Math.sqrt(x)} & Karekök alır \\
+\texttt{Math.pow(x, y)} & Üs alma ($x^y$) \\
+\texttt{Math.min(...)} & En küçük değeri bulur \\
+\texttt{Math.random()} & 0 ile 1 arasında rastgele sayı üretir \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{dikkat}
+\texttt{Math.random() * 10} $\rightarrow$ 0-10 arası, \texttt{Math.random() * 100 + 1} $\rightarrow$ 1-101 arası sayı üretmek için kullanılan genel kalıp.
+\end{dikkat}
+
+\subsection*{Diziler (Array) ve İç İçe Diziler}
+
+\begin{lstlisting}
+let urunler  = ["Iphone 15", "Iphone 16", "Iphone 17"];
+let fiyatlar = [50000, 60000, 70000];
+
+let urun11 = ["Iphone 15", 50000, ["gold", "silver", "black"]];
+console.log(urun11[2][2]); // "black" -> ic dizinin 3. elemani
+\end{lstlisting}
+
+\newpage
+
+% ================= SCRIPT4.JS =================
+\section{script4.js --- Dizi Metotları}
+
+Bir öğrenci listesi üzerinden dizilerde ekleme/çıkarma/arama işlemleri denenmiş:
+
+\begin{center}
+\begin{tabular}{@{}p{5.2cm}p{8.3cm}@{}}
+\toprule
+\textbf{Metot} & \textbf{Ne yapar} \\
+\midrule
+\texttt{length} & Eleman sayısı \\
+\texttt{toString()} & Diziyi virgülle ayrılmış stringe çevirir \\
+\texttt{join(' ')} & Diziyi belirtilen ayraçla stringe çevirir \\
+\texttt{pop()} & Son elemanı \textbf{siler ve döndürür} \\
+\texttt{shift()} & İlk elemanı \textbf{siler ve döndürür} \\
+\texttt{push(x)} & Sona eleman \textbf{ekler}, dizinin yeni uzunluğunu döndürür \\
+\texttt{unshift(x)} & Başa eleman \textbf{ekler}, dizinin yeni uzunluğunu döndürür \\
+\texttt{indexOf(x)} & Elemanın index'ini bulur \\
+\texttt{includes(x)} & Eleman var mı diye \texttt{true/false} döner \\
+\texttt{splice(b, s, ...y)} & Belirtilen konumdan eleman siler/ekler \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{dikkat}
+\texttt{push()} ve \texttt{unshift()} eklenen elemanı değil, \textbf{dizinin yeni uzunluğunu (length)} döndürür. Kodda \texttt{sonuc = ogrenciler.push("Sena")} satırından sonra \texttt{console.log(sonuc)} bir sayı (dizinin yeni uzunluğu) basar, "Sena" değil --- bu JS'e yeni başlayanların en çok şaşırdığı noktalardan biri.
+\end{dikkat}
+
+\newpage
+
+% ================= SCRIPT5.JS =================
+\section{script5.js --- Dizi Uygulaması + Nesneler (Objects)}
+
+İlk kısımda meyve dizisi üzerinde \texttt{push}/\texttt{pop} pratiği yapılmış.
+
+\subsection*{Nesneler (Object) --- Key/Value Yapısı}
+
+\begin{lstlisting}
+let kullanici1 = {
+  "ad": "Sadik",
+  "soyad": "Turan",
+  "yas": 40,
+  "adres": {
+    "sehir": "kocaeli",
+    "ilce": "izmit"
+  },
+  "hobileler ": ["sinema", "spor"]
+};
+\end{lstlisting}
+
+\subsection*{Nesne Değerlerine Erişim --- İki Yöntem}
+
+\begin{lstlisting}
+kullanici1["ad"];        // koseli parantez (bracket) notasyonu
+kullanici1.adres.ilce;   // nokta (dot) notasyonu, ic ice nesnelerde de calisir
+\end{lstlisting}
+
+\begin{dikkat}
+\texttt{"hobileler "} anahtarının sonunda fazladan bir boşluk var (yazım hatası). Bu yüzden \texttt{kullanici1.hobileler} çalışmaz, sadece \texttt{kullanici1["hobileler "]} (boşlukla birlikte) çalışır. Nesne anahtarlarında boşluk/özel karakter olursa dot notation kullanılamaz, bracket notation zorunlu hale gelir --- bu satır bunun canlı bir örneği.
+
+Ayrıca \texttt{kullanicilar = [kullanici1, kullanici2];} satırında değişken \texttt{var}/\texttt{let} olmadan tanımlanmış. Bu, JS'te ``implicit global'' (örtük global değişken) oluşturur ve genelde önerilmez --- ileride \texttt{"use strict"} modunda bu satır hataya bile sebep olabilir.
+\end{dikkat}
+
+\newpage
+
+% ================= SCRIPT6.JS =================
+\section{script6.js --- Nesne Uygulaması: Sipariş Sistemi}
+
+Gerçekçi bir e-ticaret sipariş verisi üzerinden iç içe (nested) nesne ve dizi kullanımı pekiştirilmiş.
+
+\begin{lstlisting}
+let siparis1 = {
+  siparis_id: 101,
+  satin_alinanlar: [           // dizi icinde nesneler (birden fazla urun)
+    { urun_id: 5, urun_basligi: "Iphone 16 Pro", urun_fiyat: 75000 },
+    { urun_id: 6, urun_basligi: "Iphone 16 Pro Max", urun_fiyat: 85000 }
+  ],
+  musteri: { musteri_id: 12 }
+};
+\end{lstlisting}
+
+\texttt{siparis2} içinde ise \texttt{satin\_alinanlar} bir dizi değil, tek bir nesne --- yani aynı alan farklı sipariş kayıtlarında farklı veri yapısına (dizi vs. tekil nesne) sahip olabiliyor, bu da erişim şeklini değiştiriyor:
+
+\begin{lstlisting}
+// siparis1: dizi oldugu icin index ile erisim + toplama
+var siparis_1toplam = (siparis1.satin_alinanlar[0].urun_fiyat
+                      + siparis1.satin_alinanlar[1].urun_fiyat) * 1.2;
+
+// siparis2: tekil nesne oldugu icin dogrudan alan adiyla erisim
+var siparis_2toplam = siparis2.satin_alinanlar.urun_fiyat * 1.2;
+\end{lstlisting}
+
+\texttt{* 1.2} çarpanı \%20 KDV eklemek için kullanılmış. Bu dosyanın öğrettiği en önemli fikir: gerçek dünya verisi (API'den gelen JSON gibi) genelde bu şekilde iç içe nesne ve dizilerin karışımından oluşur, bu yüzden veriye erişmeden önce yapısının (dizi mi, nesne mi) bilinmesi gerekir.
+
+\newpage
+
+% ================= ÖZET =================
+\section{Genel Özet --- Öğrenilen Konular}
+
+\begin{itemize}[leftmargin=1.2em]
+\item Değişken tanımlama (\texttt{var}, \texttt{let}) ve isimlendirme kuralları
+\item Veri tipleri: \texttt{string}, \texttt{number}, \texttt{boolean}, \texttt{undefined} ve \texttt{typeof} operatörü
+\item String birleştirme (\texttt{+}) ile matematiksel toplama arasındaki fark
+\item Template literal (backtick) kullanımı
+\item String metotları: \texttt{toUpperCase}, \texttt{slice}, \texttt{substring}, \texttt{replace}, \texttt{trim}, \texttt{indexOf}, \texttt{split}
+\item Sayı dönüştürme (\texttt{Number}, \texttt{parseFloat}) ve biçimlendirme (\texttt{toFixed}, \texttt{toPrecision})
+\item \texttt{Math} nesnesi fonksiyonları (\texttt{round}, \texttt{ceil}, \texttt{floor}, \texttt{sqrt}, \texttt{pow}, \texttt{min}, \texttt{random})
+\item Diziler: tanımlama, index ile erişim, iç içe diziler
+\item Dizi metotları: \texttt{push}, \texttt{pop}, \texttt{shift}, \texttt{unshift}, \texttt{indexOf}, \texttt{includes}, \texttt{splice}, \texttt{join}
+\item Nesneler (objects): key-value yapısı, iç içe nesneler, dot/bracket notation
+\item Gerçekçi veri modelleme: dizi + nesne kombinasyonlarıyla (sipariş sistemi) çalışma
+\end{itemize}
+
+\section{Tekrar Ederken Dikkat Edilecek Noktalar}
+
+\begin{itemize}[leftmargin=1.2em]
+\item \texttt{split(" ")[-1]} JS'te çalışmaz --- negatif index yoktur, \texttt{.at(-1)} kullanılmalı.
+\item \texttt{push()} / \texttt{unshift()} eklenen elemanı değil, dizinin \textbf{yeni uzunluğunu} döndürür.
+\item Nesne anahtarında boşluk/özel karakter varsa \textbf{sadece bracket notation} (\texttt{obj["anahtar adı"]}) çalışır, dot notation çalışmaz.
+\item Değişkeni \texttt{var}/\texttt{let} olmadan atamak örtük global değişken oluşturur, kaçınılmalı.
+\item Aynı alan (\texttt{satin\_alinanlar} gibi) farklı kayıtlarda dizi ya da tekil nesne olabilir --- erişimden önce veri yapısı kontrol edilmeli.
+\end{itemize}
+
+\end{document}
