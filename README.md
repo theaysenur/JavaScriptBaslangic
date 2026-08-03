@@ -2,6 +2,8 @@
 
 Bu repo, JavaScript öğrenme sürecimde yazdığım pratik kodları ve notları içerir. Amaç, öğrendiğim konuları tekrar edebileceğim düzenli bir kaynak oluşturmak.
 
+> 📄 Bu notların kapak sayfalı, kod bloklu, tablo ve "Dikkat" kutularıyla düzenlenmiş **PDF** halini görmek için: [`notlar/notlar.pdf`](notlar/notlar.pdf) (LaTeX kaynağı: [`notlar/notlar.tex`](notlar/notlar.tex))
+
 ## Klasör Yapısı
 
 ```
